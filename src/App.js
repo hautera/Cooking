@@ -10,23 +10,22 @@ function Ingredients(props) {
 function Directions(props){
   const directions = props.directions;
   return directions.map((element, index) => {
-    return (<li key={index} className='ingredient'>{element}</li>);
+    return (<li key={index} className='direction'>{element}</li>);
   });
 }
-
 
 function Recipe(props) {
   return (
     <div>
       <h1>{props.name}</h1>
+      <h3>Ingredients:</h3>
       <ul><Ingredients ing={props.ing}/></ul>
+      <h3>Directons:</h3>
       <ol><Directions directions={props.directions}/></ol>
       <button onClick={props.edit}>Edit</button>
     </div>
     );
 }
-
-
 
 function RecipeForm(props) { 
   const ingList = props.ingredients.map((ingredient, index) => {
@@ -60,7 +59,6 @@ function RecipeForm(props) {
   );
 }
 
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -84,6 +82,7 @@ class App extends React.Component {
       ingFormValue : '',
       dirFormValue : '',
       nameFormValue : '',
+      searchBarValue : '',
     };
   }
 
@@ -121,18 +120,30 @@ class App extends React.Component {
           
     } else {
       const recipeList = this.state.recipes;
-      const recipes = recipeList.map(
-        (recipe, index) => {
-          return ( 
-          <li key={index}>
-            <button onClick={() => this.setRecipe(index)}>{recipe.name}</button>
-            <button onClick={() => this.deleteRecipe(index)}>Delete</button>
-          </li>
-          );
-        });
+      const searchValue = this.state.searchBarValue.toLowerCase();
+      const filteredRecipes = recipeList.filter( recipe => {
+        return recipe.name.toLowerCase().includes(searchValue);
+      });
+      let recipes;
+      if (filteredRecipes.length === 0) {
+        recipes = <h5>No recipes found</h5>
+      } else {
+        recipes = filteredRecipes.map(
+          (recipe, index) => {
+            return ( 
+            <li key={index}>
+              <button onClick={() => this.setRecipe(index)}>{recipe.name}</button>
+              <button onClick={() => this.deleteRecipe(index)}>Delete</button>
+            </li>
+            );
+          });
+      }
       return (<div>
         <h1>Recipes</h1>
         <div>
+          <div>
+            <input type='text' placeholder="Search recipes" value={this.state.searchBarValue} onChange={(event) => this.updateSearchBar(event)}></input>
+          </div>
           <button onClick={() => this.createRecipe()}>Add new recipe</button>
         </div>
         <ol>{recipes}</ol>
@@ -183,7 +194,7 @@ class App extends React.Component {
       ingFormValue : '',
     });
   }
-
+  
   addDirection() {
     let dirList = this.state.formDirList.slice();
     dirList.push(this.state.dirFormValue);
@@ -249,6 +260,12 @@ class App extends React.Component {
     } else {
       alert("The form is incomplete!");
     }
+  }
+
+  updateSearchBar(event) {
+    this.setState({
+      searchBarValue : event.target.value,
+    });
   }
 }
 
