@@ -21,6 +21,7 @@ function Recipe(props) {
       <h1>{props.name}</h1>
       <ul><Ingredients ing={props.ing}/></ul>
       <ol><Directions directions={props.directions}/></ol>
+      <button onClick={props.edit}>Edit</button>
     </div>
     );
 }
@@ -114,7 +115,7 @@ class App extends React.Component {
       return (
         <div>
           <button onClick={() => this.setRecipe(-1)}>Back</button>
-          <Recipe name={name} ing={ingredients} directions={directions}/>
+          <Recipe name={name} ing={ingredients} directions={directions} edit={() => this.editRecipe(index)}/>
         </div>
         );
           
@@ -137,6 +138,21 @@ class App extends React.Component {
         <ol>{recipes}</ol>
       </div>);
     }
+  }
+
+  editRecipe(index) {
+    const name = this.state.recipes[index].name;
+    const ingList = this.state.recipes[index].ingredients;
+    const dirList = this.state.recipes[index].directions;
+    this.deleteRecipe(index);
+    
+    this.setState({
+      currentRecipe : -1,
+      currentlyEditing : true,
+      nameFormValue : name, 
+      formIngList : ingList,
+      formDirList : dirList,
+    });
   }
   
   createRecipe() {
